@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/weather_list_linear_layout"
+    android:background="@color/colorPrimaryLight">
+
+    <ImageView
+        android:layout_width="@dimen/image_side_length"
+        android:layout_height="match_parent"
+        android:id="@+id/list_weather_icon"
+        android:contentDescription="@string/weather_condition_image"
+        android:scaleType="fitCenter"
+        android:src="@mipmap/ic_ball_clear" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:id="@+id/list_weather_day_text"
+            android:text="Day"
+            android:textColor="@color/colorDarkTitle"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/list_weather_summary_text"
+            android:text="Summary"
+            android:textColor="@color/colorDarkBodyText"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/list_weather_precipType_text"
+            android:text="Rain Type"
+            android:textColor="@color/colorDarkBodyText"/>
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/list_weather_minTemp_text"
+            android:text="Low"
+            android:textColor="@color/colorDarkBodyText"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/list_weather_maxTemp_text"
+            android:text="High"
+            android:textColor="@color/colorDarkBodyText"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/list_weather_windSpeed_text"
+            android:text="Windspeed"
+            android:textColor="@color/colorDarkBodyText"/>
+
+    </LinearLayout>
+
+</LinearLayout>

@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">Ballday, Everyday</string>
+    <string name="action_settings">Settings</string>
+    <string name="api_key">f433f8a38953df0c26f81e1a1c986432</string>
+    <string name="web_service_url">https://api.forecast.io/forecast/</string>
+    <string name="invalid_url">Invalid URL</string>
+    <string name="weather_condition_image">A graphical representation of the weather conditions</string>
+    <string name="high_temp">High: %s</string>
+    <string name="low_temp">Low: %s</string>
+    <string name="day_description">%1$s: %2$s</string>
+    <string name="humidity">Humidity: %s</string>
+    <string name="read_error">Unable to read weather data</string>
+    <string name="connect_error">Unable to connect to Forecast.io</string>
+    <string name="api_service_link">http://forecast.io</string>
+    <string name="title_activity_main_menu">Ballday, Everyday</string>
+    <string name="title_activity_current_forecast">Current Forecast</string>
+</resources>

@@ -12,6 +12,7 @@ public class WeatherParse
 
     // populated containers with collected weather data
     public ArrayList<WeatherDaily> weatherDailyArrayList;
+    public ArrayList<WeatherHourly> weatherHourlyArrayList;
     public WeatherCurrentDay weatherCurrentDay;
 
     // private JSON field titles
@@ -36,11 +37,49 @@ public class WeatherParse
     {
         weatherAsJSON = s;
         weatherDailyArrayList = new ArrayList<>();
+        weatherHourlyArrayList = new ArrayList<>();
     }
 
     public void ParseHourlyWeatherJSONArray()
     {
+        int size;
+        WeatherDaily weatherDaily;
+        WeatherHourly weatherHourly;
+        try
+        {
+            JSONObject parentWeatherObject = new JSONObject(weatherAsJSON);
+            if(parentWeatherObject.has("hourly")) {
+                JSONObject dailyWeatherObject = parentWeatherObject.getJSONObject("hourly");
+                if (dailyWeatherObject.has("data")) {
+                    JSONArray dailyArray = dailyWeatherObject.getJSONArray("data");
 
+                    size = dailyArray.length();
+                    for (int i = 0; i < size; ++i) {
+                        weatherHourly = new WeatherHourly();
+                        JSONObject object = dailyArray.getJSONObject(i);
+
+                        weatherHourly.dayOfWeek = weatherHourly.setDayOfWeek(getJSONLongParamter(object, time), "E - H:mm");
+                        weatherHourly.iconRef = getJSONStringParameter(object, icon);
+                        weatherHourly.summary = getJSONStringParameter(object, summary);
+                        weatherHourly.currentTemp = getJSONStringParameter(object, currentTemp);
+                        weatherHourly.apparentTemp = getJSONStringParameter(object, apparentTemp);
+
+                        String type = getJSONStringParameter(object, precipType);
+                        if(type.length() > 0)
+                            weatherHourly.precipType = type.substring(0,1).toUpperCase() + type.substring(1);
+                        else
+                            weatherHourly.precipType = "";
+
+                        weatherHourly.precipProbability = weatherHourly.setPercentage(getJSONDoubleParamter(object, precipProbability));
+                        weatherHourly.windSpeed = getJSONStringParameter(object, windSpeed);
+                        weatherHourlyArrayList.add(weatherHourly);
+                    }
+                }
+            }
+        }
+        catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     public void ParseCurrentWeatherJSONArray()

@@ -9,6 +9,8 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -24,11 +26,14 @@ import le2e.lsvau.balldayeveryday.R;
 import le2e.lsvau.balldayeveryday.infrastructure.IconManager;
 import le2e.lsvau.balldayeveryday.infrastructure.JSON_URL_Adapter;
 import le2e.lsvau.balldayeveryday.infrastructure.WeatherCurrentDay;
+import le2e.lsvau.balldayeveryday.infrastructure.WeatherListAdapter;
 import le2e.lsvau.balldayeveryday.infrastructure.WeatherParse;
 
 public class CurrentForecastActivity extends AppCompatActivity implements ConnectionCallbacks, OnConnectionFailedListener
 {
     private GoogleApiClient cGoogleApiClient;
+    private RecyclerView recyclerView;
+    private WeatherListAdapter adapter;
 
     ProgressDialog progressDialog;
 
@@ -59,6 +64,11 @@ public class CurrentForecastActivity extends AppCompatActivity implements Connec
         summaryTextView = (TextView)findViewById(R.id.current_weather_summary_text);
         iconImageView = (ImageView)findViewById(R.id.current_weather_image_view);
 
+        recyclerView = (RecyclerView) findViewById(R.id.current_hourly_recycler_view);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        adapter = new WeatherListAdapter(this);
+        recyclerView.setAdapter(adapter);
+
         if (cGoogleApiClient == null) {
             cGoogleApiClient = new GoogleApiClient.Builder(this)
                     .addConnectionCallbacks(this)
@@ -82,7 +92,7 @@ public class CurrentForecastActivity extends AppCompatActivity implements Connec
     // ******************** ASYNCTASK Functions ********************
     // *************************************************************
 
-    public class GetCurrentWeatherTask extends AsyncTask<String, String, WeatherCurrentDay>
+    public class GetCurrentWeatherTask extends AsyncTask<String, String, WeatherParse>
     {
         @Override
         protected void onPreExecute() {
@@ -95,7 +105,7 @@ public class CurrentForecastActivity extends AppCompatActivity implements Connec
         }
 
         @Override
-        protected WeatherCurrentDay doInBackground(String... params)
+        protected WeatherParse doInBackground(String... params)
         {
             WeatherParse weatherParse;
             String weatherAsJSON = JSON_URL_Adapter.DownloadJSON_FromURL(params[0]);
@@ -104,25 +114,42 @@ public class CurrentForecastActivity extends AppCompatActivity implements Connec
                 weatherParse = new WeatherParse(weatherAsJSON);
                 weatherParse.ParseCurrentWeatherJSONArray();
 
-                return weatherParse.weatherCurrentDay;
+                // new stuff
+                weatherParse.ParseHourlyWeatherJSONArray();
+
+
+                return weatherParse;
             }
             return null;
         }
 
         @Override
-        protected void onPostExecute(WeatherCurrentDay result) {
+        protected void onPostExecute(WeatherParse result) {
             super.onPostExecute(result);
             progressDialog.dismiss();
 
-            iconImageView.setImageResource(IconManager.getIconReference(result.iconRef));
-            dayTextView.setText(result.dayOfWeek);
-            actualTempTextView.setText("Actual: " + result.currentTemp + "\u00B0F");
-            feelsLikeTextView.setText("Feels like: " + result.apparentTemp + "\u00B0F");
-            humidityTextView.setText("Humidity " + result.humidity + "%");
-            rainChanceTextView.setText(((result.precipType.equals("")) ? "Precipitation" : result.precipType) + " " + result.precipProbability + "%");
-            windSpeedTextView.setText("Windspeed: " + result.windSpeed + "mph");
-            summaryTextView.setText(result.summary);
+            if(result != null) {
+                // current forecast
+                WeatherCurrentDay currentDay = result.weatherCurrentDay;
+                iconImageView.setImageResource(IconManager.getIconReference(currentDay.iconRef));
+                dayTextView.setText(currentDay.dayOfWeek);
+                actualTempTextView.setText("Actual: " + currentDay.currentTemp + "\u00B0F");
+                feelsLikeTextView.setText("Feels like: " + currentDay.apparentTemp + "\u00B0F");
+                humidityTextView.setText("Humidity " + currentDay.humidity + "%");
+                rainChanceTextView.setText(((currentDay.precipType.equals("")) ? "Precipitation" : currentDay.precipType) + " " + currentDay.precipProbability + "%");
+                windSpeedTextView.setText("Windspeed: " + currentDay.windSpeed + "mph");
+                summaryTextView.setText(currentDay.summary);
+
+                // hourly forecast
+                int listSize = result.weatherHourlyArrayList.size();
+                adapter.setHourly(true);
+                for(int i = 0; i < listSize; ++i)
+                {
+                    adapter.addWeatherHourlyItem(result.weatherHourlyArrayList.get(i));
+                }
+            }
         }
+
     }
 
     // **************************************************************

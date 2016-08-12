@@ -106,6 +106,7 @@ public class MainActivity extends AppCompatActivity implements ConnectionCallbac
             super.onPostExecute(result);
             progressDialog.dismiss();
 
+            adapter.setDaily(true);
             for(int i = 0; i < result.size(); ++i)
             {
                 adapter.addWeatherItemToList(result.get(i));
